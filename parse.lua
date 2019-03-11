@@ -8,7 +8,7 @@ local function main(fileName)
     local data = json.decode(file:read("*a"))
     file:close()
 
-    local majorUpgrades, minorUpgrades, patchUpgrades = {}, {}, {}
+    local majorUpgrades, minorUpgrades, patchUpgrades, unknown = {}, {}, {}, {}
     local longestNameLength = 0
 
     for _, dependency in pairs(data.outdated.dependencies) do
@@ -27,6 +27,8 @@ local function main(fileName)
                 return minorUpgrades
             elseif latestPatch > currPatch then
                 return patchUpgrades
+            else
+                return unknown
             end
         end)()
 
@@ -56,6 +58,15 @@ local function main(fileName)
         print("=================================")
         print()
         print(formatList(patchUpgrades, longestNameLength))
+        print()
+        print()
+    end
+
+    if next(unknown) then
+        print("Other Updates")
+        print("=================================")
+        print()
+        print(formatList(unknown, longestNameLength))
         print()
         print()
     end
